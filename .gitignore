@@ -14,3 +14,5 @@ GE_Dataset/processed_data.csv
 GE_Dataset/train_data.csv
 
 GE_Dataset/train_prediction.csv
+
+GE_Dataset/.idea/vcs.xml

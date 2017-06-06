@@ -179,7 +179,7 @@ train_data.loc[pd.isnull(train_data['credit_history']),'credit_history'] = defau
 train_data.loc[pd.isnull(train_data['property_area']),'property_area'] = 'unknown'
 
 ########################################################################################################
-# Cleaning  ends
+# Cleaning  data ends
 ########################################################################################################
 
 
