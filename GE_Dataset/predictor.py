@@ -1,5 +1,5 @@
-
-
+import pyspark.mllib.regression
+import pyspark.mllib.tree
 from pyspark.ml import Pipeline
 from pyspark.ml.classification import RandomForestClassifier as RF
 from pyspark.ml.feature import StringIndexer, VectorIndexer, VectorAssembler, SQLTransformer
@@ -54,16 +54,28 @@ self_employed_encode = UserDefinedFunction(lambda at : propertyAreaMap[at], Doub
 data = data.withColumn('marital_status_encoded',marital_status_udf(data['marital_status']))\
     .withColumn('gender_encoded',gender_udf(data['gender'])) \
     .withColumn('qualification_encoded', qualification_udf(data['qualification'])) \
-    .withColumn('is_self_employed_modified', self_employed_udf(data['is_self_employed'])) \
-    .withColumn('is_self_employed_encoded', self_employed_encode(data['is_self_employed_modified']))\
+    .withColumn('is_self_employed_encoded', self_employed_udf(data['is_self_employed'])) \
+    .withColumn('property_area_encoded', self_employed_encode(data['property_area_modified']))\
     .drop('loan_id') \
     .drop('marital_status')\
     .drop('gender') \
     .drop('is_self_employed')\
-    .drop('is_self_employed')
+    .drop('property_area') \
+    .drop('property_area_modified')
 
 data.printSchema();
 
-(train_data, test_data) = data.randomSplit([0.8,0.2])
 
+
+def labelData(data):
+    return map(lambda d : pyspark.mllib.regression.LabeledPoint(d[-1], d[:-1]),data)
+
+
+(train_data, test_data) = labelData(data).randomSplit([0.8,0.2])
+
+model = pyspark.mllib.tree.DecisionTree.trainClassifier(train_data, numClasses=2, maxDepth=2,
+                                                        categoricalFeaturesInfo={1:2, 2:2},
+                                                        impurity='gini', maxBins=32)
+
+print( model.toDebugString());
 
