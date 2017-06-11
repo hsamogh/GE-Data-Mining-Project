@@ -19,6 +19,7 @@ female_count = len(train_data[train_data['gender'] == 'F'])
 # variable gender_default stores default gender to be applied in case of missing gender value
 gender_default = ''
 
+
 # assigning default gender based on counts
 if male_count > female_count:
     gender_default = 'M'
